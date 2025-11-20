@@ -129,7 +129,7 @@ def draw(images, labels, boxes, scores, thrh=0.4):
             draw.rectangle(list(b), outline='red')
             draw.text(
                 (b[0], b[1]),
-                text=f"{lab[j].item()} {round(scrs[j].item(), 2)}",
+                text=f"{lab[j].item()} @ {round(scrs[j].item(), 2)}",
                 fill='blue',
             )
 
@@ -138,7 +138,7 @@ def draw(images, labels, boxes, scores, thrh=0.4):
 def process_image(m, file_path, device, size=(640, 640), model_size='s'):
     im_pil = Image.open(file_path).convert('RGB')
     w, h = im_pil.size
-    orig_size = torch.tensor([w, h])[None].to(device)
+    orig_size = torch.tensor([w, h], dtype=torch.int32)[None].to(device)  # 改为int32
 
     transforms = T.Compose([
         T.Resize(size),
@@ -157,7 +157,7 @@ def process_image(m, file_path, device, size=(640, 640), model_size='s'):
     output = m(blob)
     result_images = draw([im_pil], output['labels'], output['boxes'], output['scores'])
     result_images[0].save('trt_result.jpg')
-    print("Image processing complete. Result saved as 'result.jpg'.")
+    print("Image processing complete. Result saved as 'trt_result.jpg'.")
 
 def process_video(m, file_path, device, size=(640, 640), model_size='s'):
     cap = cv2.VideoCapture(file_path)
@@ -190,7 +190,7 @@ def process_video(m, file_path, device, size=(640, 640), model_size='s'):
         frame_pil = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
         w, h = frame_pil.size
-        orig_size = torch.tensor([w, h])[None].to(device)
+        orig_size = torch.tensor([w, h], dtype=torch.int32)[None].to(device)  # 改为int32
 
         im_data = transforms(frame_pil)[None]
 
