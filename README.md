@@ -299,6 +299,14 @@ ckpts/
 
 
 ## 3. Usage
+
+### Supported Dataset Formats
+
+DEIMv2 supports multiple dataset formats:
+- **COCO format** (JSON annotations)
+- **VOC format** (XML annotations)
+- **YOLO format** (TXT annotations) - See [YOLO Format Guide](./docs/YOLO_FORMAT.md) for details
+
 <details open>
 <summary> 3.1 COCO2017 </summary>
 
@@ -309,6 +317,9 @@ ckpts/
 
     # for HGNetv2-based variants
     CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --master_port=7777 --nproc_per_node=4 train.py -c configs/deimv2/deimv2_hgnetv2_${model}_coco.yml --use-amp --seed=0
+
+    # for single gpu
+    CUDA_VISIBLE_DEVICES=0 python train.py -c configs/deimv2/deimv2_xxx.yml --use-amp --seed=0 -u train_dataloader.num_workers=0 val_dataloader.num_workers=0
     ```
 
 2. Testing
@@ -318,6 +329,9 @@ ckpts/
 
     # for HGNetv2-based variants
     CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --master_port=7777 --nproc_per_node=4 train.py -c configs/deimv2/deimv2_hgnetv2_${model}_coco.yml --test-only -r model.pth
+
+    # for single gpu
+    CUDA_VISIBLE_DEVICES=0 python train.py -c configs/deimv2/deimv2_xxx.yml --test-only -r outputs/xxx/best_stg2.pth -u val_dataloader.num_workers=0
     ```
 
 3. Tuning
@@ -466,6 +480,8 @@ DEIMCriterion:
 2. Export onnx
     ```shell
     python tools/deployment/export_onnx.py --check -c configs/deimv2/deimv2_dinov3_${model}_coco.yml -r model.pth
+    python tools/deployment/export_onnx_fixed.py --check -c configs/deimv2/deimv2_xxx.yml -r outputs/xxx/best_stg2.pth --simplify --opset 16
+    python tools/deployment/export_onnx_fixed.py --check -c configs/deimv2/deimv2_xxx.yml -r outputs/xxx/best_stg2.pth --simplify --opset 16 --dynamic
     ```
 
 3. Export [tensorrt](https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html)
@@ -493,6 +509,9 @@ DEIMCriterion:
     python tools/inference/onnx_inf.py --onnx model.onnx --input image.jpg  # video.mp4
     python tools/inference/trt_inf.py --trt model.engine --input image.jpg
     python tools/inference/torch_inf.py -c configs/deimv2/deimv2_dinov3_${model}_coco.yml -r model.pth --input image.jpg --device cuda:0
+
+    python tools/inference/torch_inf.py -c configs/deimv2/deimv2_xxx.yml -r outputs/xxx/best_stg2.pth --input xxx.jpg --device cuda:0
+    python tools/inference/onnx_inf.py --onnx outputs/deimv2_hgnetv2_n_xxx/best_stg2.onnx --input xxx.jpg --model-size n
     ```
 </details>
 
