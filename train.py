@@ -14,6 +14,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 
 import argparse
+import torch.multiprocessing as mp
 
 from engine.misc import dist_utils
 from engine.core import YAMLConfig, yaml_utils
@@ -29,8 +30,10 @@ if debug:
     torch.Tensor.__repr__ = custom_repr
 
 def main(args, ) -> None:
-    """main
-    """
+    """main"""
+    # 设置多进程共享内存策略
+    mp.set_sharing_strategy('file_system')
+    
     dist_utils.setup_distributed(args.print_rank, args.print_method, seed=args.seed)
 
     assert not all([args.tuning, args.resume]), \
