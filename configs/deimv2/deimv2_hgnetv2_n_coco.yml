@@ -61,21 +61,20 @@ optimizer:
   betas: [0.9, 0.999]
   weight_decay: 0.0001
 
+
+# -------------------------------- Default --------------------------------
 # Increase to search for the optimal ema
 epoches: 160 # 148 + 12
-
 ## Our LR-Scheduler
-flat_epoch: 7800    # 4 + epoch // 2, e.g., 40 = 4 + 72 / 2
+flat_epoch: 78    # 4 + epoch // 2, e.g., 40 = 4 + 72 / 2
 no_aug_epoch: 12
 lr_gamma: 1.0
-
 ## Our DataAug
 train_dataloader: 
   dataset: 
     transforms:
       policy:
         epoch: [4, 78, 148]   # list 
-
   collate_fn:
     ema_restart_decay: 0.9999
     base_size_repeat: ~
@@ -87,10 +86,40 @@ train_dataloader:
     num_objects: 3
     with_expand: True
     expand_ratios: [0.1, 0.25]
-
 DEIMCriterion:
   matcher:
     # new matcher
     change_matcher: True
     iou_order_alpha: 4.0
     matcher_change_epoch: 136
+
+# # -------------------------------- Continue --------------------------------
+# # Increase to search for the optimal ema
+# epoches: 120 # 160 - 40, surpose we have trained 40 epochs
+# ## Our LR-Scheduler
+# flat_epoch: 38    # 78 - 40, surpose we have trained 40 epochs
+# no_aug_epoch: 12
+# lr_gamma: 1.0
+# ## Our DataAug
+# train_dataloader: 
+#   dataset: 
+#     transforms:
+#       policy:
+#         epoch: [0, 38, 108]   # list , 0 means we start from the 41th epoch, data aug needs to be consistent
+#   collate_fn:
+#     ema_restart_decay: 0.9999
+#     base_size_repeat: ~
+#     mixup_epochs: [0, 38]   # 0 means we start from the 41th epoch, data aug needs to be consistent
+#     stop_epoch: 108   # 148 - 40, surpose we have trained 40 epochs
+#     copyblend_prob: 0.4
+#     copyblend_epochs: [0, 38]   # CP half, 0 means we start from the 41th epoch, data aug needs to be consistent
+#     area_threshold: 100
+#     num_objects: 3
+#     with_expand: True
+#     expand_ratios: [0.1, 0.25]
+# DEIMCriterion:
+#   matcher:
+#     # new matcher
+#     change_matcher: True
+#     iou_order_alpha: 4.0
+#     matcher_change_epoch: 96   # 136 - 40, surpose we have trained 40 epochs
