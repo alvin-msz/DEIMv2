@@ -1,0 +1,1 @@
+python tools/analysis/eval_analyzer.py --eval_path outputs/deimv2_xxx/eval.pth
