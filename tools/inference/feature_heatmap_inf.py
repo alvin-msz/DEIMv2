@@ -88,11 +88,19 @@ def extract_features_and_heatmap(model, images, layer_name='backbone'):
     
     return outputs, None
 
-def save_heatmap(heatmap, original_image, save_path):
+def save_heatmap(heatmap, original_image, save_path, vit_backbone=False):
     """保存特征热力图"""
     # 转换为numpy并归一化
     heatmap_np = heatmap.squeeze().cpu().numpy()
-    heatmap_np = (heatmap_np - heatmap_np.min()) / (heatmap_np.max() - heatmap_np.min())
+    
+    # 根据backbone类型调整处理方式
+    if vit_backbone:
+        # ViT模型可能需要反转热力图
+        heatmap_np = -heatmap_np  # 反转数值
+        heatmap_np = (heatmap_np - heatmap_np.min()) / (heatmap_np.max() - heatmap_np.min())
+    else:
+        # CNN模型使用标准归一化
+        heatmap_np = (heatmap_np - heatmap_np.min()) / (heatmap_np.max() - heatmap_np.min())
     
     # 调整大小到原图尺寸
     original_size = original_image.size
@@ -152,7 +160,8 @@ def draw_detections(image, labels, boxes, scores, thrh=0.45):
         # 使用类别名称而不是数字ID
         category_id = label.item()
         category_name = label_map.get(category_id, f'class_{category_id}')
-        text = f"{category_name} @ {round(score.item(), 2)}"
+        # text = f"{category_name} @ {round(score.item(), 2)}"
+        text = f"{str(category_id)} @ {round(score.item(), 2)}"
         draw.text((box[0], box[1]), text=text, fill='blue', font=font)
     
     return image
@@ -195,7 +204,7 @@ def process_single_image(model, device, image_path, output_dir, size=(640, 640),
     base_name = os.path.splitext(os.path.basename(image_path))[0]
     if heatmap is not None:
         heatmap_path = os.path.join(output_dir, f"{base_name}_heatmap.jpg")
-        save_heatmap(heatmap, original_image, heatmap_path)
+        save_heatmap(heatmap, original_image, heatmap_path, vit_backbone)
         print(f"Feature heatmap saved: {heatmap_path}")
     
     # 保存检测结果
