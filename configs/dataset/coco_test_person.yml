@@ -1,0 +1,25 @@
+task: detection
+
+evaluator:
+  type: CocoEvaluator
+  iou_types: ['bbox', ]
+
+num_classes: 1  # Change this to your dataset's number of classes
+remap_mscoco_category: True  # Remap MSCOCO categories to 0-indexed labels
+
+# Only for testing, no need for train_dataloader
+val_dataloader:
+  type: DataLoader
+  dataset:
+    type: CocoDetection
+    img_folder: /path/to/val2017/
+    ann_file: /path/to/annotations/instances_val2017.json
+    return_masks: False
+    transforms:
+      type: Compose
+      ops: ~
+  shuffle: False
+  num_workers: 4
+  drop_last: False
+  collate_fn:
+    type: BatchImageCollateFunction
