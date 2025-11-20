@@ -40,7 +40,19 @@ def draw(images, labels, boxes, scores, ratios, paddings, thrh=0.4):
         ratio = ratios[i]
         pad_w, pad_h = paddings[i]
 
-        for lbl, bb in zip(lab, box):
+        # for lbl, bb in zip(lab, box):
+        #     # Adjust bounding boxes according to the resizing and padding
+        #     bb = [
+        #         (bb[0] - pad_w) / ratio,
+        #         (bb[1] - pad_h) / ratio,
+        #         (bb[2] - pad_w) / ratio,
+        #         (bb[3] - pad_h) / ratio,
+        #     ]
+        #     draw.rectangle(bb, outline='red')
+        #     draw.text((bb[0], bb[1]), text=str(lbl), fill='blue')
+        
+        # draw box lab and scr
+        for lbl, bb, sc in zip(lab, box, scr):
             # Adjust bounding boxes according to the resizing and padding
             bb = [
                 (bb[0] - pad_w) / ratio,
@@ -48,8 +60,8 @@ def draw(images, labels, boxes, scores, ratios, paddings, thrh=0.4):
                 (bb[2] - pad_w) / ratio,
                 (bb[3] - pad_h) / ratio,
             ]
-            draw.rectangle(bb, outline='red')
-            draw.text((bb[0], bb[1]), text=str(lbl), fill='blue')
+            draw.rectangle(bb, outline='red', width=2)
+            draw.text((bb[0], bb[1]), text=f"{lbl.item()} @ {round(sc.item(), 2)}", fill='blue')
 
         result_images.append(im)
     return result_images

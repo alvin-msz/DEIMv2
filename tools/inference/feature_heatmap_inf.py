@@ -13,6 +13,29 @@ import matplotlib.cm as cm
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from engine.core import YAMLConfig
 
+# 添加类别映射
+label_map = {
+    1: 'person', 2: 'bicycle', 3: 'car', 4: 'motorbike', 5: 'aeroplane',
+    6: 'bus', 7: 'train', 8: 'truck', 9: 'boat', 10: 'trafficlight',
+    11: 'firehydrant', 12: 'streetsign', 13: 'stopsign', 14: 'parkingmeter',
+    15: 'bench', 16: 'bird', 17: 'cat', 18: 'dog', 19: 'horse',
+    20: 'sheep', 21: 'cow', 22: 'elephant', 23: 'bear', 24: 'zebra',
+    25: 'giraffe', 26: 'hat', 27: 'backpack', 28: 'umbrella', 29: 'shoe',
+    30: 'eyeglasses', 31: 'handbag', 32: 'tie', 33: 'suitcase', 34: 'frisbee',
+    35: 'skis', 36: 'snowboard', 37: 'sportsball', 38: 'kite', 39: 'baseballbat',
+    40: 'baseballglove', 41: 'skateboard', 42: 'surfboard', 43: 'tennisracket',
+    44: 'bottle', 45: 'plate', 46: 'wineglass', 47: 'cup', 48: 'fork',
+    49: 'knife', 50: 'spoon', 51: 'bowl', 52: 'banana', 53: 'apple',
+    54: 'sandwich', 55: 'orange', 56: 'broccoli', 57: 'carrot', 58: 'hotdog',
+    59: 'pizza', 60: 'donut', 61: 'cake', 62: 'chair', 63: 'sofa',
+    64: 'pottedplant', 65: 'bed', 66: 'mirror', 67: 'diningtable', 68: 'window',
+    69: 'desk', 70: 'toilet', 71: 'door', 72: 'tv', 73: 'laptop',
+    74: 'mouse', 75: 'remote', 76: 'keyboard', 77: 'cellphone', 78: 'microwave',
+    79: 'oven', 80: 'toaster', 81: 'sink', 82: 'refrigerator', 83: 'blender',
+    84: 'book', 85: 'clock', 86: 'vase', 87: 'scissors', 88: 'teddybear',
+    89: 'hairdrier', 90: 'toothbrush', 91: 'hairbrush'
+}
+
 def extract_features_and_heatmap(model, images, layer_name='backbone'):
     """提取特征并生成热力图"""
     features = {}
@@ -126,7 +149,10 @@ def draw_detections(image, labels, boxes, scores, thrh=0.45):
     
     for j, (label, box, score) in enumerate(zip(filtered_labels, filtered_boxes, filtered_scores)):
         draw.rectangle(list(box), outline='red', width=2)
-        text = f"{label.item()} {round(score.item(), 2)}"
+        # 使用类别名称而不是数字ID
+        category_id = label.item()
+        category_name = label_map.get(category_id, f'class_{category_id}')
+        text = f"{category_name} @ {round(score.item(), 2)}"
         draw.text((box[0], box[1]), text=text, fill='blue', font=font)
     
     return image

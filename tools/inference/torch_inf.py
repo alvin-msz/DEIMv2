@@ -31,7 +31,7 @@ def draw(images, labels, boxes, scores, thrh=0.45):
 
         for j, b in enumerate(box):
             draw.rectangle(list(b), outline='red')
-            draw.text((b[0], b[1]), text=f"{lab[j].item()} {round(scrs[j].item(), 2)}", fill='blue', )
+            draw.text((b[0], b[1]), text=f"{lab[j].item()} @ {round(scrs[j].item(), 2)}", fill='blue', )
 
         im.save('torch_results.jpg')
 
